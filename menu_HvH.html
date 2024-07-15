@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Tic-Tac-Toe</title>
+    <link rel="icon" type="image/png" href="images\icon.jpeg">
+</head>
+
+<body>
+    <h1 class="menu_heading_2">
+        Tic-Tac-Toe
+    </h1>
+    <form id="user_details">
+        <h3>Please Fill the following Details:</h3>
+        <h4>(Note: Player 1 gets the first chance to Play)</h4>
+        <table>
+            <tr>
+                <th>Player 1</th>
+                <th>Player 2</th>
+            </tr>
+            <tr>
+                <td>
+                    <label>Name of Player 1:</label>
+                    <input type="text" id="player1Name" placeholder="Player Name">
+                </td>
+                <td>
+                    <label>Name of Player 2:</label>
+                    <input type="text" id="player2Name" placeholder="Player Name">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Symbol of Player 1:
+                    <div class="pawn_design">X</div>
+                </td>
+                <td>
+                    Symbol of Player 2:
+                    <div class="pawn_design">O</div>
+                </td>
+            </tr>
+        </table>
+        <button type="submit" class="my_button">
+            <b>Start the Game</b>
+        </button>
+    </form>
+    <script src="scripts/form_HvH.js"></script>
+</body>
+
+</html>

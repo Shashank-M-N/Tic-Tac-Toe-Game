@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Tic-Tac-Toe</title>
+    <link rel="icon" type="image/png" href="images\icon.jpeg">
+</head>
+
+<body>
+    <h1 class="game_heading">
+        Tic-Tac-Toe
+    </h1>
+    <div class="game_menu">
+        <div class="player1_chance" id="player1_chance">
+            player1 chance
+        </div>
+        <div class="game">
+            <button class="box" data-cell-index="0"> </button>
+            <button class="box" data-cell-index="1"> </button>
+            <button class="box" data-cell-index="2"> </button>
+            <button class="box" data-cell-index="3"> </button>
+            <button class="box" data-cell-index="4"> </button>
+            <button class="box" data-cell-index="5"> </button>
+            <button class="box" data-cell-index="6"> </button>
+            <button class="box" data-cell-index="7"> </button>
+            <button class="box" data-cell-index="8"> </button>
+        </div>
+        <div class="player2_chance" id="player2_chance">
+            player2 chance
+        </div>
+    </div>
+    <button class="my_button">Quit</button>
+    <div class="after_game" id="after_game">
+        <div class="after_game_content">
+            <div id="winner_display">
+                Winner Display
+            </div>
+            <div>
+                <button class="exit_button" id="back_to_menu">Main Menu</button>
+                <a href="game.html">
+                    <button class="exit_button" id="back_to_game">Play Again</button>
+                </a>
+            </div>
+        </div>
+    </div>
+    <script src="scripts/game.js"></script>
+</body>
+
+</html>
