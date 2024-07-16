@@ -67,12 +67,15 @@ function checkValidMove(button) {
     }
 }
 
-function checkForVictoryOrCompletionOfGame() {
+function getCurrentState() {
 
     buttons.forEach(button => {
         const buttonText = button.textContent;
         buttonStates.push(buttonText);
     });
+}
+
+function checkForVictoryOrCompletionOfGame() {
 
     if (buttonStates[0] == buttonStates[1] && buttonStates[1] == buttonStates[2] && buttonStates[1] != ' ') {
         End = true;
@@ -203,6 +206,7 @@ if (user_choice == 'HvC') {
     buttons.forEach(button => {
         button.addEventListener('click', () => {
             checkValidMove(button);
+            getCurrentState();
             checkForVictoryOrCompletionOfGame();
             winnerDeclarationOrContinueGame();
         });
