@@ -34,7 +34,6 @@ function initializeGameHvC() {
 
     const user_pawn = localStorage.getItem('userChoice');
     const user_name = localStorage.getItem('user_name');
-    const user_level = localStorage.getItem('selected_level')
 
     if (user_pawn == 'cross') {
         player1_name = user_name;
@@ -51,8 +50,6 @@ function initializeGameHvC() {
 }
 
 function checkValidMove(button) {
-
-    const cellIndex = button.getAttribute('data-cell-index');
 
     const buttonText = button.textContent;
     if (buttonText === 'X') {
@@ -71,62 +68,70 @@ function getCurrentState() {
 
     buttons.forEach(button => {
         const buttonText = button.textContent;
-        buttonStates.push(buttonText);
+        if (buttonText == 'X') {
+            buttonStates.push(1);
+        } else if (buttonText == 'O') {
+            buttonStates.push(-1);
+        } else if (buttonText == ' ') {
+            buttonStates.push(0);
+        } else {
+            console.error("Error in Boardstates.");
+        }
     });
 }
 
 function checkForVictoryOrCompletionOfGame() {
 
-    if (buttonStates[0] == buttonStates[1] && buttonStates[1] == buttonStates[2] && buttonStates[1] != ' ') {
+    if (buttonStates[0] == buttonStates[1] && buttonStates[1] == buttonStates[2] && buttonStates[1] != 0) {
         End = true;
         if (chance % 2 == 1) {
             winner = player1_name;
         } else {
             winner = player2_name;
         }
-    } else if (buttonStates[3] == buttonStates[4] && buttonStates[4] == buttonStates[5] && buttonStates[4] != ' ') {
+    } else if (buttonStates[3] == buttonStates[4] && buttonStates[4] == buttonStates[5] && buttonStates[4] != 0) {
         End = true;
         if (chance % 2 == 1) {
             winner = player1_name;
         } else {
             winner = player2_name;
         }
-    } else if (buttonStates[6] == buttonStates[7] && buttonStates[7] == buttonStates[8] && buttonStates[7] != ' ') {
+    } else if (buttonStates[6] == buttonStates[7] && buttonStates[7] == buttonStates[8] && buttonStates[7] != 0) {
         End = true;
         if (chance % 2 == 1) {
             winner = player1_name;
         } else {
             winner = player2_name;
         }
-    } else if (buttonStates[0] == buttonStates[3] && buttonStates[3] == buttonStates[6] && buttonStates[3] != ' ') {
+    } else if (buttonStates[0] == buttonStates[3] && buttonStates[3] == buttonStates[6] && buttonStates[3] != 0) {
         End = true;
         if (chance % 2 == 1) {
             winner = player1_name;
         } else {
             winner = player2_name;
         }
-    } else if (buttonStates[1] == buttonStates[4] && buttonStates[4] == buttonStates[7] && buttonStates[4] != ' ') {
+    } else if (buttonStates[1] == buttonStates[4] && buttonStates[4] == buttonStates[7] && buttonStates[4] != 0) {
         End = true;
         if (chance % 2 == 1) {
             winner = player1_name;
         } else {
             winner = player2_name;
         }
-    } else if (buttonStates[2] == buttonStates[5] && buttonStates[5] == buttonStates[8] && buttonStates[5] != ' ') {
+    } else if (buttonStates[2] == buttonStates[5] && buttonStates[5] == buttonStates[8] && buttonStates[5] != 0) {
         End = true;
         if (chance % 2 == 1) {
             winner = player1_name;
         } else {
             winner = player2_name;
         }
-    } else if (buttonStates[0] == buttonStates[4] && buttonStates[4] == buttonStates[8] && buttonStates[4] != ' ') {
+    } else if (buttonStates[0] == buttonStates[4] && buttonStates[4] == buttonStates[8] && buttonStates[4] != 0) {
         End = true;
         if (chance % 2 == 1) {
             winner = player1_name;
         } else {
             winner = player2_name;
         }
-    } else if (buttonStates[2] == buttonStates[4] && buttonStates[4] == buttonStates[6] && buttonStates[4] != ' ') {
+    } else if (buttonStates[2] == buttonStates[4] && buttonStates[4] == buttonStates[6] && buttonStates[4] != 0) {
         End = true;
         if (chance % 2 == 1) {
             winner = player1_name;
@@ -136,7 +141,7 @@ function checkForVictoryOrCompletionOfGame() {
     } else {
         emptySpaces = 0;
         for (let i = 0; i < 9; i++) {
-            if (buttonStates[i] == ' ') {
+            if (buttonStates[i] == 0) {
                 emptySpaces++;
             }
         }
@@ -174,7 +179,7 @@ function winnerDeclarationOrContinueGame() {
             after_game.style.transform = 'scale(0)';
             window.location.href = "player_mode.html";
         });
-        button.addEventListener('click', () => {
+        toGame.addEventListener('click', () => {
             after_game.style.opacity = 0;
             after_game.style.transform = 'scale(0)';
         });
@@ -195,12 +200,143 @@ function winnerDeclarationOrContinueGame() {
     }
 }
 
+async function makeFirstMove(buttonStates) {
+
+    try {
+        const response = await fetch('./policy_p1.json');
+        const jsonObject = await response.json();
+        const statesValue = jsonObject;
+        const user_level = localStorage.getItem('selected_level');
+        let availableStates = [];
+
+        for (let i = 0; i < buttonStates.length; i++) {
+            if (buttonStates[i] == 0) {
+                availableStates.push(i)
+            }
+        }
+
+        let randomInt = Math.floor(Math.random() * 10) + 1;
+        if (randomInt <= user_level) {
+            let randomInt = Math.floor(Math.random() * availableStates.length);
+            let computerMove = document.querySelector(`[data-cell-index="${randomInt}"]`);
+            if (computerMove) {
+                computerMove.textContent = 'X';
+            } else {
+                console.error("Computer gave a wrong output");
+            }
+        } else {
+            let nextButtonStates = [];
+            let action = null;
+            let value_max = -Infinity;
+            let value = null;
+            for (let i = 0; i < availableStates.length; i++) {
+                nextButtonStates = Array.from(buttonStates) //copying the array
+                nextButtonStates[availableStates[i]] = 1;
+                let key = JSON.stringify(nextButtonStates);
+                let value = statesValue[key] || 0;
+                if (value >= value_max) {
+                    value_max = value;
+                    action = availableStates[i];
+                }
+            }
+            computerMove = document.querySelector(`[data-cell-index="${action}"]`);
+            if (computerMove) {
+                computerMove.textContent = 'X';
+            } else {
+                console.error("Computer gave a wrong output");
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching the file:', error);
+    }
+}
+
+async function computersMove(buttonStates) {
+
+    console.log(`chance: ${chance}`);
+
+    try {
+        let response = null;
+
+        if (chance % 2 == 1) {
+            response = await fetch('./policy_p1.json');
+            console.log("policy1");
+        }
+        else {
+            response = await fetch('./policy_p2.json');
+        }
+
+        let availableStates = [];
+        const jsonObject = await response.json();
+        const statesValue = jsonObject;
+        const user_level = localStorage.getItem('selected_level');
+
+        for (let i = 0; i < buttonStates.length; i++) {
+            if (buttonStates[i] == 0) {
+                availableStates.push(i)
+            }
+        }
+
+        let action = null;
+        let randomInt = Math.floor(Math.random() * 10) + 1;
+
+        if (randomInt <= user_level) {
+            action = Math.floor(Math.random() * availableStates.length);
+        } else {
+            let nextButtonStates = [];
+            let value_max = -Infinity;
+            for (let i = 0; i < availableStates.length; i++) {
+                nextButtonStates = Array.from(buttonStates)
+                nextButtonStates[availableStates[i]] = 1;
+                let key = JSON.stringify(nextButtonStates);
+                let value = statesValue[key] || 0;
+                if (value >= value_max) {
+                    value_max = value;
+                    action = availableStates[i];
+                }
+            }
+        }
+
+        let computerMove = document.querySelector(`[data-cell-index="${action}"]`);
+        if (computerMove) {
+        console.log(chance);
+            computerMove.textContent = (chance % 2 === 1) ? 'X' : 'O';
+        } else {
+            console.error("Computer gave a wrong output");
+        }
+    } catch (error) {
+        console.error('Error fetching the file:', error);
+    }
+
+    nextMove = true;
+}
+
 if (user_choice == 'HvC') {
     initializeGameHvC();
-    End = true;
-    checkForVictoryOrCompletionOfGame();
-    winnerDeclarationOrContinueGame();
-
+    if (player1_name === 'computer') {
+        chance = 1;
+        getCurrentState();
+        computersMove(buttonStates)
+        buttonStates = [];
+        chance++;
+    }
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            checkValidMove(button);
+            getCurrentState();
+            checkForVictoryOrCompletionOfGame();
+            winnerDeclarationOrContinueGame();
+            if (nextMove) {
+                console.log(`going to computer`);
+                console.log(buttonStates);
+                computersMove(buttonStates);
+                getCurrentState();
+                console.log(buttonStates);
+                checkForVictoryOrCompletionOfGame();
+                winnerDeclarationOrContinueGame();
+            }
+        });
+    });
 } else if (user_choice == 'HvH') {
     initializeGameHvH();
     buttons.forEach(button => {
@@ -212,5 +348,5 @@ if (user_choice == 'HvC') {
         });
     });
 } else {
-    console.log("Error!")
+    console.log("Error!");
 }
