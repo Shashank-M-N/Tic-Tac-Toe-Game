@@ -1,8 +1,13 @@
 const gameForm = document.getElementById('user_details');
 const levelSlider = document.getElementById('levelSlider');
 const selectedLevelSpan = document.getElementById('selectedLevel');
+const heading = document.querySelector('.slide')
 
 let option = "HvC";
+
+window.addEventListener('load', function() {
+    heading.classList.add('loaded');
+});
 
 // Update the displayed level when the slider value changes
 levelSlider.addEventListener('input', function () {
@@ -20,5 +25,8 @@ gameForm.addEventListener('submit', function (event) {
     localStorage.setItem('user_option', option);
 
     // Redirect to the next page.
-    window.location.href = 'game.html';
+    heading.classList.add('active');
+    setTimeout(function() {
+        window.location.href = 'game.html';
+    }, 1000);
 });

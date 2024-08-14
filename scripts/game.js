@@ -14,9 +14,17 @@ const buttons = document.querySelectorAll('.box');
 const player1_chance = document.getElementById('player1_chance');
 const player2_chance = document.getElementById('player2_chance');
 const exit_screen = document.getElementById('after_game');
+const heading = document.querySelector('.slide')
+
+window.addEventListener('load', function () {
+    heading.classList.add('loaded');
+});
 
 quit_btn.addEventListener('click', () => {
-    window.location.href = "player_mode.html";
+    heading.classList.add('active');
+    setTimeout(function () {
+        window.location.href = 'player_mode.html';
+    }, 1000);
 });
 
 function initializeGameHvH() {
@@ -177,11 +185,18 @@ function winnerDeclarationOrContinueGame() {
         toMenu.addEventListener('click', () => {
             after_game.style.opacity = 0;
             after_game.style.transform = 'scale(0)';
-            window.location.href = "player_mode.html";
+            heading.classList.add('active');
+            setTimeout(function () {
+                window.location.href = 'player_mode.html';
+            }, 1000);
         });
         toGame.addEventListener('click', () => {
             after_game.style.opacity = 0;
             after_game.style.transform = 'scale(0)';
+            heading.classList.add('active');
+            setTimeout(function () {
+                window.location.href = 'game.html';
+            }, 1000);
         });
     }
     else if (nextMove) {
@@ -233,7 +248,7 @@ async function makeFirstMove(buttonStates) {
                 nextButtonStates = Array.from(buttonStates) //copying the array
                 nextButtonStates[availableStates[i]] = 1;
                 let key = JSON.stringify(nextButtonStates);
-                let value = statesValue[key] || 0;
+                value = statesValue[key] || 0;
                 if (value >= value_max) {
                     value_max = value;
                     action = availableStates[i];
@@ -299,7 +314,7 @@ async function computersMove(buttonStates) {
 
         let computerMove = document.querySelector(`[data-cell-index="${action}"]`);
         if (computerMove) {
-        console.log(chance);
+            console.log(chance);
             computerMove.textContent = (chance % 2 === 1) ? 'X' : 'O';
         } else {
             console.error("Computer gave a wrong output");
