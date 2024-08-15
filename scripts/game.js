@@ -73,7 +73,7 @@ function checkValidMove(button) {
 }
 
 function getCurrentState() {
-    
+
     buttonStates = [];
 
     buttons.forEach(button => {
@@ -167,6 +167,7 @@ function checkForVictoryOrCompletionOfGame() {
 function winnerDeclarationOrContinueGame() {
 
     if (End === true) {
+        nextMove == false;
         console.log(`${winner} won the match`);
         buttons.forEach(button => {
             button.disabled = true;
@@ -224,14 +225,16 @@ function delay(ms) {
 async function computersMove(buttonStates) {
     console.log(`chance: ${chance}`);
 
-    return fetch(chance % 2 === 1 ? './policy_p1.json' : './policy_p2.json')
+    return fetch(chance % 2 === 1 ? './corrected2_policy_p1.json' : './corrected2_policy_p2.json')
         .then(response => {
             console.log(`chance: ${chance}`);
             console.log(chance % 2 === 1 ? "Using policy1" : "Using policy2");
             return response.json();
         })
         .then(statesValue => {
-            const user_level = parseInt(localStorage.getItem('selected_level'), 10);
+            console.log(statesValue);
+            let user_level = parseInt(localStorage.getItem('selected_level'), 10);
+            user_level = 10 - user_level;
             let availableStates = [];
 
             console.log("Button States before processing:", buttonStates);
@@ -259,10 +262,13 @@ async function computersMove(buttonStates) {
                 let value_max = -Infinity;
 
                 availableStates.forEach(index => {
-                    const nextButtonStates = [...buttonStates];
-                    nextButtonStates[index] = 1;
-                    const key = JSON.stringify(nextButtonStates);
-                    const value = statesValue[key] || 0;
+                    let nextButtonStates = [...buttonStates];
+                    nextButtonStates[index] = (chance % 2 === 1) ? 1 : -1;
+                    nextButtonStates = nextButtonStates.map(num => `${num}.`);
+                    const nextStateString = `[ ${nextButtonStates.join('  ')}]`;
+                    console.log(nextStateString);
+                    const key = nextStateString;
+                    const value = statesValue[key]||0;
                     console.log(`State: ${key}, Value: ${value}`);
 
                     if (value > value_max) {
@@ -316,7 +322,7 @@ if (user_choice === 'HvC') {
             winnerDeclarationOrContinueGame();
             console.log(nextMove);
 
-            if (nextMove) {
+            if (nextMove && !End) {
                 console.log('Going to computer move.');
                 delay(1000).then(() => {
                     getCurrentState();
