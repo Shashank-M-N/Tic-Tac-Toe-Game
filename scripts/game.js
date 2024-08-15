@@ -225,7 +225,7 @@ function delay(ms) {
 async function computersMove(buttonStates) {
     console.log(`chance: ${chance}`);
 
-    return fetch(chance % 2 === 1 ? './corrected2_policy_p1.json' : './corrected2_policy_p2.json')
+    return fetch(chance % 2 === 1 ? './policy_p1.json' : './policy_p2.json')
         .then(response => {
             console.log(`chance: ${chance}`);
             console.log(chance % 2 === 1 ? "Using policy1" : "Using policy2");
