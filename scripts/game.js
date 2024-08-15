@@ -73,6 +73,8 @@ function checkValidMove(button) {
 }
 
 function getCurrentState() {
+    
+    buttonStates = [];
 
     buttons.forEach(button => {
         const buttonText = button.textContent;
@@ -214,7 +216,7 @@ function winnerDeclarationOrContinueGame() {
         }
     }
 }
-
+/*
 async function makeFirstMove(buttonStates) {
 
     try {
@@ -364,4 +366,132 @@ if (user_choice == 'HvC') {
     });
 } else {
     console.log("Error!");
+}*/
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function computersMove(buttonStates) {
+    console.log(`chance: ${chance}`);
+
+    return fetch(chance % 2 === 1 ? './policy_p1.json' : './policy_p2.json')
+        .then(response => {
+            console.log(`chance: ${chance}`);
+            console.log(chance % 2 === 1 ? "Using policy1" : "Using policy2");
+            return response.json();
+        })
+        .then(statesValue => {
+            const user_level = parseInt(localStorage.getItem('selected_level'), 10);
+            let availableStates = [];
+
+            console.log("Button States before processing:", buttonStates);
+
+            for (let i = 0; i < buttonStates.length; i++) {
+                if (buttonStates[i] === 0) {
+                    availableStates.push(i);
+                }
+            }
+
+            console.log("Available States:", availableStates);
+
+            if (availableStates.length === 0) {
+                console.error("No available states found");
+                return;
+            }
+
+            const randomInt = Math.floor(Math.random() * 10);
+            let action = null;
+
+            if (randomInt < user_level) {
+                action = availableStates[Math.floor(Math.random() * availableStates.length)];
+                console.log("Random Action Selected:", action);
+            } else {
+                let value_max = -Infinity;
+
+                availableStates.forEach(index => {
+                    const nextButtonStates = [...buttonStates];
+                    nextButtonStates[index] = 1;
+                    const key = JSON.stringify(nextButtonStates);
+                    const value = statesValue[key] || 0;
+                    console.log(`State: ${key}, Value: ${value}`);
+
+                    if (value > value_max) {
+                        value_max = value;
+                        action = index;
+                        console.log("Best Action Updated:", action, "with value:", value_max);
+                    }
+                });
+            }
+
+            console.log("Final Action Selected:", action);
+
+            if (action === null || action === undefined) {
+                console.error("Action could not be determined.");
+                return;
+            }
+
+            const computerMove = document.querySelector(`[data-cell-index="${action}"]`);
+            if (computerMove) {
+                console.log(chance);
+                computerMove.textContent = (chance % 2 === 1) ? 'X' : 'O';
+            } else {
+                console.error("Computer made an invalid move.");
+            }
+
+            nextMove = true;
+        })
+        .catch(error => {
+            console.error('Error fetching the file:', error);
+        });
+}
+
+if (user_choice === 'HvC') {
+    initializeGameHvC();
+    if (player1_name === 'computer') {
+        getCurrentState();
+        console.log("Initial button states for computer move:", buttonStates);
+        computersMove(buttonStates).then(() => {
+            buttonStates = [];
+            chance++;
+        });
+    }
+
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            console.log("chance: ", chance);
+            checkValidMove(button);
+            getCurrentState();
+            console.log(`After human move: ${buttonStates}`);
+            checkForVictoryOrCompletionOfGame();
+            winnerDeclarationOrContinueGame();
+            console.log(nextMove);
+
+            if (nextMove) {
+                console.log('Going to computer move.');
+                delay(1000).then(() => {
+                    getCurrentState();
+                    console.log("Button states before computer move:", buttonStates);
+                    computersMove(buttonStates).then(() => {
+                        getCurrentState();
+                        console.log(`After computer move: ${buttonStates}`);
+                        checkForVictoryOrCompletionOfGame();
+                        winnerDeclarationOrContinueGame();
+                    });
+                });
+            }
+        });
+    });
+} else if (user_choice === 'HvH') {
+    initializeGameHvH();
+
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            checkValidMove(button);
+            getCurrentState();
+            checkForVictoryOrCompletionOfGame();
+            winnerDeclarationOrContinueGame();
+        });
+    });
+} else {
+    console.error("Invalid user choice!");
 }
