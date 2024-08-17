@@ -1,11 +1,12 @@
 const gameForm = document.getElementById('user_details');
 const levelSlider = document.getElementById('levelSlider');
 const selectedLevelSpan = document.getElementById('selectedLevel');
-const heading = document.querySelector('.slide')
+const heading = document.querySelector('.slide');
 
 let option = "HvC";
 
 window.addEventListener('load', function() {
+    // Add 'loaded' class when the page loads
     heading.classList.add('loaded');
 });
 
@@ -17,6 +18,7 @@ levelSlider.addEventListener('input', function () {
 gameForm.addEventListener('submit', function (event) {
     event.preventDefault();
 
+    // Save user details in local storage
     const userName = document.getElementById('userName').value || 'Anonymous';
     const selectedLevel = levelSlider.value;
 
@@ -24,7 +26,7 @@ gameForm.addEventListener('submit', function (event) {
     localStorage.setItem('selected_level', selectedLevel);
     localStorage.setItem('user_option', option);
 
-    // Redirect to the next page.
+    // Add 'active' class and redirect after 1 second
     heading.classList.add('active');
     setTimeout(function() {
         window.location.href = 'game.html';

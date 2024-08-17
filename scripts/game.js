@@ -17,16 +17,19 @@ const exit_screen = document.getElementById('after_game');
 const heading = document.querySelector('.slide')
 
 window.addEventListener('load', function () {
+    // Add 'loaded' class when the page loads
     heading.classList.add('loaded');
 });
 
 quit_btn.addEventListener('click', () => {
+    // Add 'active' class and redirect to player mode
     heading.classList.add('active');
     setTimeout(function () {
         window.location.href = 'player_mode.html';
     }, 1000);
 });
 
+// Initialize game for human vs human mode
 function initializeGameHvH() {
 
     player1_name = localStorage.getItem('player1_name');
@@ -38,6 +41,7 @@ function initializeGameHvH() {
     player2_chance.textContent = `${player2_name}'s Chance`;
 }
 
+// Initialize game for human vs computer mode
 function initializeGameHvC() {
 
     const user_pawn = localStorage.getItem('userChoice');
@@ -57,6 +61,7 @@ function initializeGameHvC() {
     player2_chance.textContent = `${player2_name}'s Chance`;
 }
 
+// Check if the move is valid
 function checkValidMove(button) {
 
     const buttonText = button.textContent;
@@ -72,6 +77,7 @@ function checkValidMove(button) {
     }
 }
 
+// Get the current state of the game board
 function getCurrentState() {
 
     buttonStates = [];
@@ -90,8 +96,11 @@ function getCurrentState() {
     });
 }
 
+// Check if the game is won or tied
 function checkForVictoryOrCompletionOfGame() {
 
+    // Logic to check for victory or a tie
+    // Updates `End`, `winner`, and `emptySpaces`
     if (buttonStates[0] == buttonStates[1] && buttonStates[1] == buttonStates[2] && buttonStates[1] != 0) {
         End = true;
         if (chance % 2 == 1) {
@@ -164,6 +173,7 @@ function checkForVictoryOrCompletionOfGame() {
     buttonStates = [];
 }
 
+// Declare the winner or continue the game
 function winnerDeclarationOrContinueGame() {
 
     if (End === true) {
@@ -204,6 +214,7 @@ function winnerDeclarationOrContinueGame() {
     }
     else if (nextMove) {
         chance++;
+        // Switch active player indicator
         if (chance % 2 == 0) {
             player2_chance.style.opacity = 1;
             player2_chance.style.transform = 'scale(1)';
@@ -218,6 +229,7 @@ function winnerDeclarationOrContinueGame() {
     }
 }
 
+// Simulate delay
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -225,52 +237,64 @@ function delay(ms) {
 async function computersMove(buttonStates) {
     console.log(`chance: ${chance}`);
 
+    // Determine which policy file to use based on whose turn it is.
     return fetch(chance % 2 === 1 ? './policy_p1.json' : './policy_p2.json')
         .then(response => {
             console.log(`chance: ${chance}`);
             console.log(chance % 2 === 1 ? "Using policy1" : "Using policy2");
-            return response.json();
+            return response.json(); // Convert the response to a JSON object.
         })
         .then(statesValue => {
             console.log(statesValue);
+            
+            // Retrieve the user's selected difficulty level (1-9) and adjust it
             let user_level = parseInt(localStorage.getItem('selected_level'), 10);
-            user_level = 10 - user_level;
+            user_level = 10 - user_level; // Higher levels reduce randomness.
+
             let availableStates = [];
 
+            // Identify the available (empty) cells on the board.
             console.log("Button States before processing:", buttonStates);
 
             for (let i = 0; i < buttonStates.length; i++) {
-                if (buttonStates[i] === 0) {
-                    availableStates.push(i);
+                if (buttonStates[i] === 0) { // If the cell is empty
+                    availableStates.push(i);  // Add it to the list of available states.
                 }
             }
 
             console.log("Available States:", availableStates);
 
-            if (availableStates.length === 0) {
+            if (availableStates.length === 0) { // If no moves are possible
                 console.error("No available states found");
                 return;
             }
 
-            const randomInt = Math.floor(Math.random() * 10);
+            const randomInt = Math.floor(Math.random() * 10); // Random value between 0 and 9
             let action = null;
 
             if (randomInt < user_level) {
+                // Perform a random move based on the difficulty level.
                 action = availableStates[Math.floor(Math.random() * availableStates.length)];
                 console.log("Random Action Selected:", action);
             } else {
-                let value_max = -Infinity;
+                let value_max = -Infinity; // Initialize the max value to the lowest possible value
 
                 availableStates.forEach(index => {
+                    // Simulate the next state by placing the computer's move
                     let nextButtonStates = [...buttonStates];
                     nextButtonStates[index] = (chance % 2 === 1) ? 1 : -1;
+
+                    // Convert the board state to a string format for policy lookup
                     nextButtonStates = nextButtonStates.map(num => `${num}.`);
                     const nextStateString = `[ ${nextButtonStates.join('  ')}]`;
                     console.log(nextStateString);
                     const key = nextStateString;
-                    const value = statesValue[key]||0;
+                    
+                    // Retrieve the state's value from the policy
+                    const value = statesValue[key] || 0;
                     console.log(`State: ${key}, Value: ${value}`);
 
+                    // Update the action if this state's value is higher than the current max value
                     if (value > value_max) {
                         value_max = value;
                         action = index;
@@ -286,21 +310,22 @@ async function computersMove(buttonStates) {
                 return;
             }
 
+            // Perform the selected action on the game board
             const computerMove = document.querySelector(`[data-cell-index="${action}"]`);
             if (computerMove) {
-                console.log(chance);
                 computerMove.textContent = (chance % 2 === 1) ? 'X' : 'O';
             } else {
                 console.error("Computer made an invalid move.");
             }
 
-            nextMove = true;
+            nextMove = true; // Set flag to indicate the move is complete
         })
         .catch(error => {
-            console.error('Error fetching the file:', error);
+            console.error('Error fetching the file:', error); // Handle fetch errors
         });
 }
 
+// Game logic for human vs computer
 if (user_choice === 'HvC') {
     initializeGameHvC();
     if (player1_name === 'computer') {
@@ -338,6 +363,7 @@ if (user_choice === 'HvC') {
         });
     });
 } else if (user_choice === 'HvH') {
+    // Game logic for human vs human
     initializeGameHvH();
 
     buttons.forEach(button => {
