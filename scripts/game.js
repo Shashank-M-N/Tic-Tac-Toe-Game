@@ -9,7 +9,7 @@ let emptySpaces = 0;
 let player1_name = undefined;
 let player2_name = undefined;
 
-const quit_btn = document.querySelector('.my_button');
+const quit_btn = document.querySelector('.end_button');
 const buttons = document.querySelectorAll('.box');
 const player1_chance = document.getElementById('player1_chance');
 const player2_chance = document.getElementById('player2_chance');
@@ -189,7 +189,8 @@ function winnerDeclarationOrContinueGame() {
         }, 0);
         const winnerDisplay = document.getElementById('winner_display');
         const toMenu = document.getElementById('back_to_menu');
-        const toGame = document.getElementById('back_to_game');
+        const toGameSame = document.getElementById('back_to_game_same');
+        const toGameDiff = document.getElementById('back_to_game_diff');
         if (winner != 0) {
             winnerDisplay.textContent = `${winner} won the match`;
         } else {
@@ -203,7 +204,7 @@ function winnerDeclarationOrContinueGame() {
                 window.location.href = 'player_mode.html';
             }, 1000);
         });
-        toGame.addEventListener('click', () => {
+        toGameSame.addEventListener('click', () => {
             after_game.style.opacity = 0;
             after_game.style.transform = 'scale(0)';
             heading.classList.add('active');
@@ -211,6 +212,25 @@ function winnerDeclarationOrContinueGame() {
                 window.location.href = 'game.html';
             }, 1000);
         });
+        toGameDiff.addEventListener('click', () => {
+            const user_pawn = localStorage.getItem('userChoice');
+            after_game.style.opacity = 0;
+            after_game.style.transform = 'scale(0)';
+            if (user_choice === 'HvC') {
+                if (user_pawn === 'cross') {
+                    localStorage.setItem('userChoice', 'circle');
+                } else if (user_pawn === 'circle') {
+                    localStorage.setItem('userChoice', 'cross');
+                }
+            } else if (user_choice === 'HvH') {
+                localStorage.setItem('player1_name', player2_name);
+                localStorage.setItem('player2_name', player1_name);
+            }
+            heading.classList.add('active');
+            setTimeout(() => {
+                window.location.href = 'game.html';
+            }, 1000);
+        });        
     }
     else if (nextMove) {
         chance++;
@@ -246,7 +266,7 @@ async function computersMove(buttonStates) {
         })
         .then(statesValue => {
             console.log(statesValue);
-            
+
             // Retrieve the user's selected difficulty level (1-9) and adjust it
             let user_level = parseInt(localStorage.getItem('selected_level'), 10);
             user_level = 10 - user_level; // Higher levels reduce randomness.
@@ -289,7 +309,7 @@ async function computersMove(buttonStates) {
                     const nextStateString = `[ ${nextButtonStates.join('  ')}]`;
                     console.log(nextStateString);
                     const key = nextStateString;
-                    
+
                     // Retrieve the state's value from the policy
                     const value = statesValue[key] || 0;
                     console.log(`State: ${key}, Value: ${value}`);
@@ -341,6 +361,9 @@ if (user_choice === 'HvC') {
         button.addEventListener('click', () => {
             console.log("chance: ", chance);
             checkValidMove(button);
+            buttons.forEach(button => {
+                button.disabled = true;
+            });
             getCurrentState();
             console.log(`After human move: ${buttonStates}`);
             checkForVictoryOrCompletionOfGame();
@@ -360,6 +383,9 @@ if (user_choice === 'HvC') {
                     });
                 });
             }
+            buttons.forEach(button => {
+                button.disabled = false;
+            });
         });
     });
 } else if (user_choice === 'HvH') {
