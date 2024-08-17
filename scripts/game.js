@@ -49,9 +49,9 @@ function initializeGameHvC() {
 
     if (user_pawn == 'cross') {
         player1_name = user_name;
-        player2_name = "computer";
+        player2_name = "Computer";
     } else if (user_pawn == 'circle') {
-        player1_name = "computer";
+        player1_name = "Computer";
         player2_name = user_name;
     }
 
