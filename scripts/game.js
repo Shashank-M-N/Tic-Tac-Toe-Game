@@ -258,7 +258,7 @@ async function computersMove(buttonStates) {
     console.log(`chance: ${chance}`);
 
     // Determine which policy file to use based on whose turn it is.
-    return fetch(chance % 2 === 1 ? './policy_p1.json' : './policy_p2.json')
+    return fetch(chance % 2 === 1 ? './policy/policy_p1.json' : './policy/policy_p2.json')
         .then(response => {
             console.log(`chance: ${chance}`);
             console.log(chance % 2 === 1 ? "Using policy1" : "Using policy2");

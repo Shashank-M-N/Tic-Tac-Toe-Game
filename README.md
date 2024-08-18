@@ -2,7 +2,7 @@
 
 ## Overview
 
-Welcome to the **Tic-Tac-Toe Game**! You can play the Tic-Tac-Toe Game directly on the web. The project is hosted [here](https://yourwebsite.com). This is an update to my [previous repository](https://github.com/Shashank-M-N/Tic-Tac-Toe-game.git), where I created a similar project in a Jupyter notebook. This version is a web-based implementation of the classic Tic-Tac-Toe game, created using HTML, CSS, and JavaScript. The game features two gameplay modes:
+Welcome to the **Tic-Tac-Toe Game**! You can play the Tic-Tac-Toe Game directly on the web. The project is hosted [here](https://yourwebsite.com). This is an update to my [previous repository](https://github.com/Shashank-M-N/Tic-Tac-Toe-game-jupyternotebook.git), where I created a similar project in a Jupyter notebook. This version is a web-based implementation of the classic Tic-Tac-Toe game, created using HTML, CSS, and JavaScript. The game features two gameplay modes:
 - **Human vs. Human**: Two players can play against each other on the same device.
 - **Human vs. Computer**: Challenge yourself against an AI-powered opponent, which is a model trained using reinforcement learning.
 
@@ -16,7 +16,7 @@ Welcome to the **Tic-Tac-Toe Game**! You can play the Tic-Tac-Toe Game directly 
 
 ## How the AI Works
 
-The AI in this game is powered by a reinforcement learning model. If you're interested in learning how to train your own model and integrate it into a project like this, you can refer to my [previous repository](https://github.com/Shashank-M-N/Tic-Tac-Toe-game.git). This repo provides detailed instructions on how to train a model and convert it for use in a web-based game.
+The AI in this game is powered by a reinforcement learning model. If you're interested in learning how to train your own model and integrate it into a project like this, you can refer to my [previous repository](https://github.com/Shashank-M-N/Tic-Tac-Toe-game-jupyternotebook.git). This repo provides detailed instructions on how to train a model and convert it for use in a web-based game.
 
 ## Converting Model from Binary to JSON
 
