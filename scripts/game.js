@@ -388,7 +388,9 @@ if (user_choice === 'HvC') {
                     });
                 });
             } else {
-                enableButtons();
+                if (!End) {
+                    enableButtons();
+                }
             }
         });
     });
