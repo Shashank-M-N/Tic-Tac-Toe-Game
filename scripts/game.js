@@ -16,6 +16,36 @@ const player2_chance = document.getElementById('player2_chance');
 const exit_screen = document.getElementById('after_game');
 const heading = document.querySelector('.slide')
 
+// Simulate delay
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function disableClick(event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+}
+
+// Disable the buttons
+function disableButtons(opacity) {
+    const buttons = document.querySelectorAll('.box');
+    buttons.forEach(button => {
+        button.style.filter = `opacity(${opacity})`;
+        button.addEventListener('click', disableClick, true);
+        button.style.pointerEvents = 'none';
+    });
+}
+
+// Enable the buttons
+function enableButtons() {
+    const buttons = document.querySelectorAll('.box');
+    buttons.forEach(button => {
+        button.style.filter = '';
+        button.removeEventListener('click', disableClick, true);
+        button.style.pointerEvents = '';
+    });
+}
+
 window.addEventListener('load', function () {
     // Add 'loaded' class when the page loads
     heading.classList.add('loaded');
@@ -178,59 +208,59 @@ function winnerDeclarationOrContinueGame() {
 
     if (End === true) {
         nextMove == false;
-        console.log(`${winner} won the match`);
-        buttons.forEach(button => {
-            button.disabled = true;
-        });
-        after_game.style.display = 'block';
-        window.setTimeout(function () {
-            after_game.style.opacity = 1;
-            after_game.style.transform = 'scale(1)';
-        }, 0);
-        const winnerDisplay = document.getElementById('winner_display');
-        const toMenu = document.getElementById('back_to_menu');
-        const toGameSame = document.getElementById('back_to_game_same');
-        const toGameDiff = document.getElementById('back_to_game_diff');
-        if (winner != 0) {
-            winnerDisplay.textContent = `${winner} won the match`;
-        } else {
-            winnerDisplay.textContent = 'The match is tied';
-        }
-        toMenu.addEventListener('click', () => {
-            after_game.style.opacity = 0;
-            after_game.style.transform = 'scale(0)';
-            heading.classList.add('active');
-            setTimeout(function () {
-                window.location.href = 'player_mode.html';
-            }, 1000);
-        });
-        toGameSame.addEventListener('click', () => {
-            after_game.style.opacity = 0;
-            after_game.style.transform = 'scale(0)';
-            heading.classList.add('active');
-            setTimeout(function () {
-                window.location.href = 'game.html';
-            }, 1000);
-        });
-        toGameDiff.addEventListener('click', () => {
-            const user_pawn = localStorage.getItem('userChoice');
-            after_game.style.opacity = 0;
-            after_game.style.transform = 'scale(0)';
-            if (user_choice === 'HvC') {
-                if (user_pawn === 'cross') {
-                    localStorage.setItem('userChoice', 'circle');
-                } else if (user_pawn === 'circle') {
-                    localStorage.setItem('userChoice', 'cross');
-                }
-            } else if (user_choice === 'HvH') {
-                localStorage.setItem('player1_name', player2_name);
-                localStorage.setItem('player2_name', player1_name);
+        disableButtons(0.6);
+        delay(1500).then(() => {
+            after_game.style.display = 'block';
+            window.setTimeout(function () {
+                after_game.style.display = 'block';
+                after_game.offsetHeight;
+                after_game.classList.add('show');
+            }, 0);
+            const winnerDisplay = document.getElementById('winner_display');
+            const toMenu = document.getElementById('back_to_menu');
+            const toGameSame = document.getElementById('back_to_game_same');
+            const toGameDiff = document.getElementById('back_to_game_diff');
+            if (winner != 0) {
+                winnerDisplay.textContent = `${winner} won the match`;
+            } else {
+                winnerDisplay.textContent = 'The match is tied';
             }
-            heading.classList.add('active');
-            setTimeout(() => {
-                window.location.href = 'game.html';
-            }, 1000);
-        });        
+            toMenu.addEventListener('click', () => {
+                after_game.style.opacity = 0;
+                after_game.style.transform = 'scale(0)';
+                heading.classList.add('active');
+                setTimeout(function () {
+                    window.location.href = 'player_mode.html';
+                }, 1000);
+            });
+            toGameSame.addEventListener('click', () => {
+                after_game.style.opacity = 0;
+                after_game.style.transform = 'scale(0)';
+                heading.classList.add('active');
+                setTimeout(function () {
+                    window.location.href = 'game.html';
+                }, 1000);
+            });
+            toGameDiff.addEventListener('click', () => {
+                const user_pawn = localStorage.getItem('userChoice');
+                after_game.style.opacity = 0;
+                after_game.style.transform = 'scale(0)';
+                if (user_choice === 'HvC') {
+                    if (user_pawn === 'cross') {
+                        localStorage.setItem('userChoice', 'circle');
+                    } else if (user_pawn === 'circle') {
+                        localStorage.setItem('userChoice', 'cross');
+                    }
+                } else if (user_choice === 'HvH') {
+                    localStorage.setItem('player1_name', player2_name);
+                    localStorage.setItem('player2_name', player1_name);
+                }
+                heading.classList.add('active');
+                setTimeout(() => {
+                    window.location.href = 'game.html';
+                }, 1000);
+            });
+        });
     }
     else if (nextMove) {
         chance++;
@@ -249,23 +279,14 @@ function winnerDeclarationOrContinueGame() {
     }
 }
 
-// Simulate delay
-function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function computersMove(buttonStates) {
-    console.log(`chance: ${chance}`);
 
     // Determine which policy file to use based on whose turn it is.
     return fetch(chance % 2 === 1 ? './policy/policy_p1.json' : './policy/policy_p2.json')
         .then(response => {
-            console.log(`chance: ${chance}`);
-            console.log(chance % 2 === 1 ? "Using policy1" : "Using policy2");
             return response.json(); // Convert the response to a JSON object.
         })
         .then(statesValue => {
-            console.log(statesValue);
 
             // Retrieve the user's selected difficulty level (1-9) and adjust it
             let user_level = parseInt(localStorage.getItem('selected_level'), 10);
@@ -274,15 +295,11 @@ async function computersMove(buttonStates) {
             let availableStates = [];
 
             // Identify the available (empty) cells on the board.
-            console.log("Button States before processing:", buttonStates);
-
             for (let i = 0; i < buttonStates.length; i++) {
                 if (buttonStates[i] === 0) { // If the cell is empty
                     availableStates.push(i);  // Add it to the list of available states.
                 }
             }
-
-            console.log("Available States:", availableStates);
 
             if (availableStates.length === 0) { // If no moves are possible
                 console.error("No available states found");
@@ -295,7 +312,6 @@ async function computersMove(buttonStates) {
             if (randomInt < user_level) {
                 // Perform a random move based on the difficulty level.
                 action = availableStates[Math.floor(Math.random() * availableStates.length)];
-                console.log("Random Action Selected:", action);
             } else {
                 let value_max = -Infinity; // Initialize the max value to the lowest possible value
 
@@ -307,23 +323,18 @@ async function computersMove(buttonStates) {
                     // Convert the board state to a string format for policy lookup
                     nextButtonStates = nextButtonStates.map(num => `${num}.`);
                     const nextStateString = `[ ${nextButtonStates.join('  ')}]`;
-                    console.log(nextStateString);
                     const key = nextStateString;
 
                     // Retrieve the state's value from the policy
                     const value = statesValue[key] || 0;
-                    console.log(`State: ${key}, Value: ${value}`);
 
                     // Update the action if this state's value is higher than the current max value
                     if (value > value_max) {
                         value_max = value;
                         action = index;
-                        console.log("Best Action Updated:", action, "with value:", value_max);
                     }
                 });
             }
-
-            console.log("Final Action Selected:", action);
 
             if (action === null || action === undefined) {
                 console.error("Action could not be determined.");
@@ -350,7 +361,6 @@ if (user_choice === 'HvC') {
     initializeGameHvC();
     if (player1_name === 'Computer') {
         getCurrentState();
-        console.log("Initial button states for computer move:", buttonStates);
         computersMove(buttonStates).then(() => {
             buttonStates = [];
             chance++;
@@ -359,33 +369,27 @@ if (user_choice === 'HvC') {
 
     buttons.forEach(button => {
         button.addEventListener('click', () => {
-            console.log("chance: ", chance);
             checkValidMove(button);
-            buttons.forEach(button => {
-                button.disabled = true;
-            });
+            disableButtons(1);
             getCurrentState();
-            console.log(`After human move: ${buttonStates}`);
             checkForVictoryOrCompletionOfGame();
             winnerDeclarationOrContinueGame();
-            console.log(nextMove);
 
             if (nextMove && !End) {
-                console.log('Going to computer move.');
                 delay(1000).then(() => {
                     getCurrentState();
-                    console.log("Button states before computer move:", buttonStates);
                     computersMove(buttonStates).then(() => {
                         getCurrentState();
-                        console.log(`After computer move: ${buttonStates}`);
                         checkForVictoryOrCompletionOfGame();
                         winnerDeclarationOrContinueGame();
+                        if (!End) {
+                            enableButtons();
+                        }
                     });
                 });
+            } else {
+                enableButtons();
             }
-            buttons.forEach(button => {
-                button.disabled = false;
-            });
         });
     });
 } else if (user_choice === 'HvH') {
