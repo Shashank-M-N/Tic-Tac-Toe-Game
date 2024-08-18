@@ -348,7 +348,7 @@ async function computersMove(buttonStates) {
 // Game logic for human vs computer
 if (user_choice === 'HvC') {
     initializeGameHvC();
-    if (player1_name === 'computer') {
+    if (player1_name === 'Computer') {
         getCurrentState();
         console.log("Initial button states for computer move:", buttonStates);
         computersMove(buttonStates).then(() => {
